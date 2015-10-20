@@ -1,0 +1,38 @@
+apply plugin: 'android'
+
+android {
+    compileSdkVersion 18
+    buildToolsVersion "19.0.1"
+
+    defaultConfig {
+        minSdkVersion 13
+        targetSdkVersion 18
+        versionCode 1
+        versionName "0.1"
+    }
+
+    signingConfigs {
+
+        release {
+
+            storeFile file('C:\\Users\\bspencer\\AndroidStudioProjects\\androidKeystore.jks')
+            storePassword "Fub@r251"
+            keyAlias "com.brianspencer.clayshootinglog"
+            keyPassword "Fub@r251"
+        }
+    }
+
+    buildTypes {
+        release {
+            runProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:support-v4:18.0.0'
+    compile 'com.google.android.gms:play-services:4.+'
+}
