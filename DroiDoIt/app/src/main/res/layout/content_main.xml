@@ -25,7 +25,8 @@
         android:id="@+id/textWiFi"
         android:layout_alignTop="@+id/toggleWiFi"
         android:layout_toEndOf="@+id/toggleWiFi"
-        android:layout_alignBottom="@+id/toggleWiFi" />
+        android:layout_alignBottom="@+id/toggleWiFi"
+        android:gravity="center_vertical" />
 
     <ToggleButton
         android:layout_width="wrap_content"
@@ -43,6 +44,72 @@
         android:id="@+id/textBluetooth"
         android:layout_below="@+id/textWiFi"
         android:layout_alignStart="@+id/textWiFi"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:gravity="center_vertical"
+        android:layout_alignBottom="@+id/toggleBluetooth" />
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New ToggleButton"
+        android:id="@+id/toggleGPS"
+        android:layout_below="@+id/toggleBluetooth"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="GPS is enabled"
+        android:id="@+id/textGPS"
+        android:layout_alignTop="@+id/toggleGPS"
+        android:layout_alignStart="@+id/textBluetooth"
+        android:layout_above="@+id/textLat"
+        android:gravity="center_vertical" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Lat: 00.00000"
+        android:id="@+id/textLat"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toggleGPS" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Lon: 00.00000"
+        android:id="@+id/textLon"
+        android:layout_below="@+id/textLat"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Speed: 0 meters/sec"
+        android:id="@+id/textSpeed"
+        android:layout_below="@+id/textLon"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Alt: 000"
+        android:id="@+id/textAlt"
+        android:layout_below="@+id/textSpeed"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Connected to: ACCESS POINT"
+        android:id="@+id/textWiFiAP"
+        android:layout_below="@+id/textAlt"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

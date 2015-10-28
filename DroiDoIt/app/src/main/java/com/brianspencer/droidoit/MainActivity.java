@@ -15,6 +15,7 @@ import android.widget.ToggleButton;
 import android.widget.TextView;
 import android.bluetooth.*;
 import android.net.wifi.*;
+import android.location.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -127,6 +128,60 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final TextView textLat = (TextView)findViewById(R.id.textLat);
+        final TextView textLon = (TextView)findViewById(R.id.textLon);
+        final TextView textSpeed = (TextView)findViewById(R.id.textSpeed);
+        final TextView textAlt = (TextView)findViewById(R.id.textAlt);
+        final TextView textGPS = (TextView)findViewById(R.id.textGPS);
+        final ToggleButton toggleGPS = (ToggleButton) findViewById(R.id.toggleGPS);
+        toggleGPS.setEnabled(false);
+
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            textGPS.setText("GPS is enabled");
+            toggleGPS.setChecked(true);
+        }
+        else {
+            textGPS.setText("GPS is disabled");
+            toggleGPS.setChecked(false);
+        }
+
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                //makeUseOfNewLocation(location);
+                textLat.setText("Lat: " + String.valueOf(location.getLatitude()));
+                textLon.setText("Lon: " + String.valueOf(location.getLongitude()));
+                textSpeed.setText("Speed: " + String.valueOf(location.getSpeed()) + " meters/sec");
+                textAlt.setText("Alt: " + String.valueOf(location.getAltitude()));
+
+                textGPS.setText("GPS is enabled");
+                toggleGPS.setChecked(true);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+        //Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        TextView textWiFiAP = (TextView)findViewById(R.id.textWiFiAP);
+        WifiManager wifiManager = (WifiManager)this.getSystemService(Context.WIFI_SERVICE);
+        if(wifiManager.isWifiEnabled()){
+            textWiFiAP.setText("Connected to: " + wifiManager.getConnectionInfo().getSSID());
+        }
+        else {
+            textWiFiAP.setText("");
+        }
+
     }
 
     @Override
@@ -149,5 +204,57 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private static final int TWO_MINUTES = 1000 * 60 * 2;
+
+    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+        if (currentBestLocation == null) {
+            // A new location is always better than no location
+            return true;
+        }
+
+        // Check whether the new location fix is newer or older
+        long timeDelta = location.getTime() - currentBestLocation.getTime();
+        boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+        boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+        boolean isNewer = timeDelta > 0;
+
+        // If it's been more than two minutes since the current location, use the new location
+        // because the user has likely moved
+        if (isSignificantlyNewer) {
+            return true;
+            // If the new location is more than two minutes older, it must be worse
+        } else if (isSignificantlyOlder) {
+            return false;
+        }
+
+        // Check whether the new location fix is more or less accurate
+        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+        boolean isLessAccurate = accuracyDelta > 0;
+        boolean isMoreAccurate = accuracyDelta < 0;
+        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+        // Check if the old and new location are from the same provider
+        boolean isFromSameProvider = isSameProvider(location.getProvider(),
+                currentBestLocation.getProvider());
+
+        // Determine location quality using a combination of timeliness and accuracy
+        if (isMoreAccurate) {
+            return true;
+        } else if (isNewer && !isLessAccurate) {
+            return true;
+        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+            return true;
+        }
+        return false;
+    }
+
+    /** Checks whether two providers are the same */
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
     }
 }
