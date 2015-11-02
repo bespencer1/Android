@@ -1,0 +1,66 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="#0099cc"
+    tools:context=".FullscreenActivity">
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:id="@+id/fullscreen_content"
+        android:background="#020202">
+
+        <TextView
+            android:layout_width="275dp"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="888"
+            android:id="@+id/textSpeed"
+            android:textColor="#ff0101"
+            android:textAlignment="center"
+            android:textSize="150dp"
+            android:textIsSelectable="true"
+            android:layout_gravity="left"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="80.8888 / 35.8888"
+            android:id="@+id/textLatLong"
+            android:layout_gravity="right"
+            android:textColor="#ff0000" />
+
+        <fragment
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:name="com.google.android.gms.maps.MapFragment"
+            android:id="@+id/map"
+            android:layout_gravity="center_vertical|right" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/fullscreen_content_controls"
+            android:background="@color/black_overlay"
+            android:layout_gravity="center_horizontal|bottom"
+            style="?metaButtonBarStyle">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/dummy_button"
+                android:id="@+id/dummy_button"
+                style="?metaButtonBarButtonStyle"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>
