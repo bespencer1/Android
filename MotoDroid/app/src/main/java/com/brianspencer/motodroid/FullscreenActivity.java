@@ -3,6 +3,7 @@ package com.brianspencer.motodroid;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -19,6 +20,11 @@ import android.widget.TextView;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -43,13 +49,15 @@ public class FullscreenActivity extends FragmentActivity implements OnMapReadyCa
      */
     private static final int UI_ANIMATION_DELAY = 300;
 
-    private static final long MIN_TIME = 400;
-    private static final float MIN_DISTANCE = 1000;
+    private static final long MIN_TIME = 0;
+    private static final float MIN_DISTANCE = 10;
+    private static final float MAP_ZOOM = 14;
 
     private View mContentView;
     private View mControlsView;
     private boolean mVisible;
     private GoogleMap mMap;
+    private List<LatLng> mPoints;
 
 
     @Override
@@ -84,6 +92,7 @@ public class FullscreenActivity extends FragmentActivity implements OnMapReadyCa
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
 
+        mPoints = new ArrayList<LatLng>();
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         // Define a listener that responds to location updates
@@ -97,13 +106,23 @@ public class FullscreenActivity extends FragmentActivity implements OnMapReadyCa
 
                 //Display the current speed
                 TextView textSpeed = (TextView) findViewById(R.id.textSpeed);
-                textSpeed.setText(MeterToMPH(location.getSpeed()));
+                int speed = MeterToMPH(location.getSpeed());
+                textSpeed.setText(String.valueOf(speed));
 
-
+                //Update the map to show current location
                 LatLng currentLoc = new LatLng(location.getLatitude(),location.getLongitude());
+                mPoints.add(currentLoc);
                 if(mMap != null) {
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLoc, 15.0f);
-                    mMap.moveCamera(cameraUpdate);
+                    //CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLoc, MAP_ZOOM);
+                    //mMap.moveCamera(cameraUpdate);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, GetZoomLevel(speed)));
+
+                    if(mPoints.size() > 1) {
+                        Polyline route = mMap.addPolyline(new PolylineOptions()
+                                .geodesic(true)
+                                .color(Color.RED));
+                        route.setPoints(mPoints);
+                    }
                 }
             }
 
@@ -144,6 +163,7 @@ public class FullscreenActivity extends FragmentActivity implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
+        mMap.setTrafficEnabled(true);
     }
 
     /**
@@ -242,9 +262,30 @@ public class FullscreenActivity extends FragmentActivity implements OnMapReadyCa
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    private String MeterToMPH(float speed){
+    private int MeterToMPH(float speed){
         //formula: Meters x 60 x 60 / 1000 x 0.621371
         float mph = speed * 60.0f * 60.0f / 1000.0f * 0.621371f;
-        return String.valueOf(Math.round(mph));
+        return Math.round(mph);
+    }
+
+    private float GetZoomLevel(int speed){
+        float retVal = MAP_ZOOM;
+
+        if(speed < 20)
+            retVal = 16.0f;
+        else if(speed < 30)
+            retVal = 15.0f;
+        else if(speed < 40)
+            retVal = 14.0f;
+        else if(speed < 50)
+            retVal = 13.0f;
+        else if(speed < 60)
+            retVal = 12.0f;
+        else if(speed < 70)
+            retVal = 11.0f;
+        else
+            retVal = 10.0f;
+
+        return retVal;
     }
 }

@@ -60,6 +60,7 @@
                 style="?metaButtonBarButtonStyle"
                 android:layout_weight="1" />
         </LinearLayout>
+
     </FrameLayout>
 
 </FrameLayout>
